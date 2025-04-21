@@ -1,0 +1,157 @@
+# config.yaml
+# === Subject info ===
+subinfo_fields:
+  - name: subject_id
+    type: int
+    constraints:
+      min: 101
+      max: 999
+      digits: 3
+
+  - name: session_name
+    type: string
+
+  - name: experimenter
+    type: string
+
+  - name: gender
+    type: choice
+    choices: [Male, Female]
+
+subinfo_mapping:
+    subject_id: "Subject ID (three digits)"
+    session_name: "Session Name"
+    experimenter: "Experimenter"
+    gender: "Gender"
+    registration_failed: "Registration failed."
+    registration_successful: "Registration successful！"
+    invalid_input: "Field {field} input is invalid."
+
+
+# === Window settings ===
+window:
+  size: [1920, 1080]
+  monitor: testMonitor
+  units: deg
+  screen: 1
+  bg_color: gray
+  fullscreen: True
+
+# === Task-level settings ===
+task:
+  total_blocks: 2
+  total_trials: 40
+  trial_per_block: 20
+  conditions: [AB, BA]
+  key_list: [left, right]
+  delta: 10 # points unit
+  seed_mode: "same_across_sub"
+
+
+# === Stimuli  ===
+
+    
+
+stimuli:
+  fixation:
+    type: text
+    text: "+"
+    color: white
+  
+  win_feedback:
+    type: text
+    text: "You won!"
+    color: green
+
+  lose_feedback:
+    type: text
+    text: "You lost!"
+    color: red
+  
+  no_response_feedback:
+    type: text
+    text: "No response!"
+    color: yellow
+
+  stima:
+    type: image
+    size: [5, 5]
+  
+  stimb:
+    type: image
+    size: [5, 5]
+
+  highlight_left:
+    type: rect
+    lineColor: 'white'
+    lineWidth: 3
+    pos: [-4, -0.3]
+    width: 3
+    height: 4
+
+  highlight_right:
+    type: rect
+    lineColor: 'white'
+    lineWidth: 3
+    pos: [4, -0.3]
+    width: 3
+    height: 4
+
+  block_break:
+    type: text
+    text: |
+      Take a break! 
+      When you are ready, press space to continue.
+    color: white
+
+  block_feedback:
+    type: text
+    text: |
+      Block {block_num} of {total_blocks} completed. 
+      Accuaracy: {accuracy:.2f}
+      Reward: {reward:.2f}
+      Press space to continue.
+    color: white
+
+  instruction_text:
+    type: text
+    text: |
+      In this task, you will see a series of cues and targets. 
+      Your task is to respond to the cues as quickly as possible. 
+      If you respond to a cue, you will earn 10 points. 
+      If you do not respond to a cue, you will earn 0 points. 
+      Press space to continue.
+    color: white
+
+
+  good_bye:
+    type: text
+    text: |
+      Thank you for participating!
+      Press space to exit.
+    color: white
+
+# === Timing & Adaptivity ===
+timing:
+  fixation_duration: [0.8, 1.0]
+  cue_duration: 1.5
+  feedback_duration: 1
+  response_duration: 2
+ 
+
+
+triggers:
+  exp_onset: 98
+  exp_end: 99
+
+  block_onset: 100
+  block_end: 101
+
+  fixation_onset: 1
+  cue_onset: 2
+  key_press: 3
+  no_response: 4
+  win_feedback_onset: 5
+  lose_feedback_onset: 6
+  no_response_feedback_onset: 7
+
