@@ -34,15 +34,35 @@ window:
   monitor: testMonitor
   units: deg
   screen: 1
-  bg_color: gray
+  bg_color: black
   fullscreen: True
 
 # === Task-level settings ===
 task:
-  total_blocks: 2
-  total_trials: 40
+  total_blocks: 1
+  total_trials: 20
   trial_per_block: 20
-  conditions: [AB, BA]
+  conditions:   
+    - PN_F_L # positive, neutral, female, left
+    - PN_F_R # positive, neutral, female, right
+    - NP_F_L # neutral, positive, female, left
+    - NP_F_R # neutral, positive, female, right
+    - SN_F_L # negative, neutral, female, left
+    - SN_F_R # negative , neutral, female, right
+    - NS_F_L # neutral, negative, female, left
+    - NS_F_R # neutral, negative, female, right
+    - PN_M_L 
+    - PN_M_R 
+    - NP_M_L
+    - NP_M_R
+    - SN_M_L
+    - SN_M_R
+    - NS_M_L
+    - NS_M_R
+    - NN_F_L
+    - NN_F_R
+    - NN_M_L
+    - NN_M_R
   key_list: [left, right]
   delta: 10 # points unit
   seed_mode: "same_across_sub"
@@ -58,44 +78,27 @@ stimuli:
     text: "+"
     color: white
   
-  win_feedback:
-    type: text
-    text: "You won!"
-    color: green
-
-  lose_feedback:
-    type: text
-    text: "You lost!"
-    color: red
-  
-  no_response_feedback:
-    type: text
-    text: "No response!"
-    color: yellow
-
-  stima:
+  left_stim:
     type: image
-    size: [5, 5]
+    pos: [-4.5, 0]
+    size: [4.5, 5]
   
-  stimb:
+  right_stim:
     type: image
-    size: [5, 5]
-
-  highlight_left:
-    type: rect
-    lineColor: 'white'
-    lineWidth: 3
-    pos: [-4, -0.3]
-    width: 3
-    height: 4
-
-  highlight_right:
-    type: rect
-    lineColor: 'white'
-    lineWidth: 3
-    pos: [4, -0.3]
-    width: 3
-    height: 4
+    pos: [4.5, 0]
+    size: [4.5, 5]
+  
+  left_target:
+    type: circle
+    radius: 3
+    pos: [-4.5, 0]
+    color: white
+  
+  right_target:
+    type: circle
+    radius: 3
+    pos: [4.5, 0]
+    color: white
 
   block_break:
     type: text
@@ -134,24 +137,135 @@ stimuli:
 # === Timing & Adaptivity ===
 timing:
   fixation_duration: [0.8, 1.0]
-  cue_duration: 1.5
-  feedback_duration: 1
-  response_duration: 2
+  cue_duration: 0.5
+  target_duration: 0.5
+
  
-
-
 triggers:
   exp_onset: 98
   exp_end: 99
 
-  block_onset: 100
-  block_end: 101
+  block_onset: 198
+  block_end: 199
 
-  fixation_onset: 1
-  cue_onset: 2
-  key_press: 3
-  no_response: 4
-  win_feedback_onset: 5
-  lose_feedback_onset: 6
-  no_response_feedback_onset: 7
+  PN_F_L_fixation_onset: 11
+  PN_F_L_cue_onset: 12
+  PN_F_L_target_onset: 13
+  PN_F_L_key_press: 14
+  PN_F_L_no_response: 15
+
+  PN_F_R_fixation_onset: 21
+  PN_F_R_cue_onset: 22
+  PN_F_R_target_onset: 23
+  PN_F_R_key_press: 24
+  PN_F_R_no_response: 25
+
+  NP_F_L_fixation_onset: 31
+  NP_F_L_cue_onset: 32
+  NP_F_L_target_onset: 33
+  NP_F_L_key_press: 34
+  NP_F_L_no_response: 35
+
+  NP_F_R_fixation_onset: 41
+  NP_F_R_cue_onset: 42
+  NP_F_R_target_onset: 43
+  NP_F_R_key_press: 44
+  NP_F_R_no_response: 45
+
+  SN_F_L_fixation_onset: 51
+  SN_F_L_cue_onset: 52
+  SN_F_L_target_onset: 53
+  SN_F_L_key_press: 54
+  SN_F_L_no_response: 55
+
+  SN_F_R_fixation_onset: 61
+  SN_F_R_cue_onset: 62
+  SN_F_R_target_onset: 63
+  SN_F_R_key_press: 64
+  SN_F_R_no_response: 65
+
+  NS_F_L_fixation_onset: 71
+  NS_F_L_cue_onset: 72
+  NS_F_L_target_onset: 73
+  NS_F_L_key_press: 74
+  NS_F_L_no_response: 75
+
+  NS_F_R_fixation_onset: 81
+  NS_F_R_cue_onset: 82
+  NS_F_R_target_onset: 83
+  NS_F_R_key_press: 84
+  NS_F_R_no_response: 85
+
+  PN_M_L_fixation_onset: 91
+  PN_M_L_cue_onset: 92
+  PN_M_L_target_onset: 93
+  PN_M_L_key_press: 94
+  PN_M_L_no_response: 95
+
+  PN_M_R_fixation_onset: 101
+  PN_M_R_cue_onset: 102
+  PN_M_R_target_onset: 103
+  PN_M_R_key_press: 104
+  PN_M_R_no_response: 105
+
+  NP_M_L_fixation_onset: 111
+  NP_M_L_cue_onset: 112
+  NP_M_L_target_onset: 113
+  NP_M_L_key_press: 114
+  NP_M_L_no_response: 115
+
+  NP_M_R_fixation_onset: 121
+  NP_M_R_cue_onset: 122
+  NP_M_R_target_onset: 123
+  NP_M_R_key_press: 124
+  NP_M_R_no_response: 125
+
+  SN_M_L_fixation_onset: 131
+  SN_M_L_cue_onset: 132
+  SN_M_L_target_onset: 133
+  SN_M_L_key_press: 134
+  SN_M_L_no_response: 135
+
+  SN_M_R_fixation_onset: 141
+  SN_M_R_cue_onset: 142
+  SN_M_R_target_onset: 143
+  SN_M_R_key_press: 144
+  SN_M_R_no_response: 145
+
+  NS_M_L_fixation_onset: 151
+  NS_M_L_cue_onset: 152
+  NS_M_L_target_onset: 153
+  NS_M_L_key_press: 154
+  NS_M_L_no_response: 155
+
+  NS_M_R_fixation_onset: 161
+  NS_M_R_cue_onset: 162
+  NS_M_R_target_onset: 163
+  NS_M_R_key_press: 164
+  NS_M_R_no_response: 165
+
+  NN_F_L_fixation_onset: 171
+  NN_F_L_cue_onset: 172
+  NN_F_L_target_onset: 173
+  NN_F_L_key_press: 174
+  NN_F_L_no_response: 175
+
+  NN_F_R_fixation_onset: 181
+  NN_F_R_cue_onset: 182
+  NN_F_R_target_onset: 183
+  NN_F_R_key_press: 184
+  NN_F_R_no_response: 185
+
+  NN_M_L_fixation_onset: 191
+  NN_M_L_cue_onset: 192
+  NN_M_L_target_onset: 193
+  NN_M_L_key_press: 194
+  NN_M_L_no_response: 195
+
+  NN_M_R_fixation_onset: 201
+  NN_M_R_cue_onset: 202
+  NN_M_R_target_onset: 203
+  NN_M_R_key_press: 204
+  NN_M_R_no_response: 205
+  
 

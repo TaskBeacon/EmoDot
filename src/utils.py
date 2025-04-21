@@ -1,103 +1,83 @@
 
-from typing import Dict, List, Optional
-from psychopy import logging
+import random
+from typing import List, Dict, Tuple
+
+class AssetPool:
+    def __init__(self, stim_list: Dict[str, List[str]], seed: int = 42):
+        self.rng = random.Random(seed)
+        self.original = stim_list
+        self.pool = {k: [] for k in stim_list}  # working pools start empty
+
+    def draw(self, key: str) -> str:
+        """Draw one stimulus from the specified key pool."""
+        if not self.pool[key]:
+            self.pool[key] = self.original[key][:]
+            self.rng.shuffle(self.pool[key])
+        return self.pool[key].pop()
 
 
-class Controller:
+
+
+import os
+from collections import defaultdict
+def get_stim_list_from_assets(asset_dir: str = './assets') -> dict:
+    stim_list = defaultdict(list)
+    for file in os.listdir(asset_dir):
+        if file.lower().endswith('.bmp'):
+            name = file.upper()
+            if name.startswith('HF'):
+                stim_list['P_F'].append(file)
+            elif name.startswith('HM'):
+                stim_list['P_M'].append(file)
+            elif name.startswith('NEF'):
+                stim_list['N_F'].append(file)
+            elif name.startswith('NEM'):
+                stim_list['N_M'].append(file)
+            elif name.startswith('SAF'):
+                stim_list['S_F'].append(file)
+            elif name.startswith('SAM'):
+                stim_list['S_M'].append(file)
+    return dict(stim_list)
+
+
+def assign_stim_from_condition(condition: str, asset_pool: AssetPool) -> dict:
     """
-    AdaptiveController dynamically adjusts stimulus duration based on participant performance,
-    aiming to maintain a target accuracy rate (e.g., 66%).
+    Assigns left/right faces to a given condition label using the AssetPool.
 
-    It supports both general (pooled) or condition-specific tracking,
-    and is suitable for use across multiple blocks of trials.
+    Parameters:
+    -----------
+    condition : str
+        A condition label, e.g., 'PN_F_L', 'SN_M_R', etc.
+    asset_pool : AssetPool
+        An instance of the AssetPool class with loaded stimuli.
+
+    Returns:
+    --------
+    dict with keys: condition, left_stim, right_stim, target_position
     """
+    emotion, gender, target = condition.split('_')
 
-    def __init__(
-        self,
-        initial_duration: float = 0.25,
-        min_duration: float = 0.1,
-        max_duration: float = 0.4,
-        step: float = 0.02,
-        target_accuracy: float = 0.66,
-        condition_specific: bool = True,
-        enable_logging: bool = True
-    ):
-        self.initial_duration = initial_duration
-        self.min_duration = min_duration
-        self.max_duration = max_duration
-        self.step = step
-        self.target_accuracy = target_accuracy
-        self.condition_specific = condition_specific
-        self.enable_logging = enable_logging
+    # Map emotion code to left/right stimulus categories
+    if emotion == 'PN':
+        left_key, right_key = 'P_' + gender, 'N_' + gender
+    elif emotion == 'NP':
+        left_key, right_key = 'N_' + gender, 'P_' + gender
+    elif emotion == 'SN':
+        left_key, right_key = 'S_' + gender, 'N_' + gender
+    elif emotion == 'NS':
+        left_key, right_key = 'N_' + gender, 'S_' + gender
+    elif emotion == 'NN':
+        left_key = right_key = 'N_' + gender
+    else:
+        raise ValueError(f"Unknown emotion code: {emotion}")
 
-        self.durations: Dict[Optional[str], float] = {}
-        self.histories: Dict[Optional[str], List[bool]] = {}
+    # Draw from pool
+    left_stim = asset_pool.draw(left_key)
+    right_stim = asset_pool.draw(right_key)
 
-    @classmethod
-    def from_dict(cls, config: dict) -> 'Controller':
-        """
-        Create an AdaptiveController instance from a flattened config dictionary.
-
-        - Missing keys are filled with defaults.
-        - Raises an error if unsupported keys are included.
-        """
-        allowed_keys = {
-            'initial_duration': 0.25,
-            'min_duration': 0.1,
-            'max_duration': 0.4,
-            'step': 0.02,
-            'target_accuracy': 0.66,
-            'condition_specific': True,
-            'enable_logging': True
-        }
-
-        # Check for unsupported keys
-        extra_keys = set(config.keys()) - set(allowed_keys)
-        if extra_keys:
-            raise ValueError(f"[AdaptiveController] Unsupported config keys: {extra_keys}")
-
-        # Fill in config with defaults
-        final_config = {k: config.get(k, default) for k, default in allowed_keys.items()}
-
-        return cls(**final_config)
-
-    def _get_key(self, condition: Optional[str]) -> Optional[str]:
-        return condition if self.condition_specific else None
-
-    def update(self, hit: bool, condition: Optional[str] = None):
-        key = self._get_key(condition)
-
-        if key not in self.durations:
-            self.durations[key] = self.initial_duration
-            self.histories[key] = []
-
-        self.histories[key].append(bool(hit))
-        acc = sum(self.histories[key]) / len(self.histories[key])
-
-        old_duration = self.durations[key]
-        if acc > self.target_accuracy:
-            new_duration = max(self.min_duration, old_duration - self.step)
-        else:
-            new_duration = min(self.max_duration, old_duration + self.step)
-
-        self.durations[key] = new_duration
-
-        if self.enable_logging:
-            label = f"[{condition}]" if condition else ""
-            logging.data(f"[Controller📢]Adaptive{label} — Trials: {len(self.histories[key])}, "
-                         f"[Controller📢]Accuracy: {acc:.2%}, Duration updated: {old_duration:.3f} → {new_duration:.3f}")
-
-    def get_duration(self, condition: Optional[str] = None) -> float:
-        key = self._get_key(condition)
-        if key not in self.durations:
-            self.durations[key] = self.initial_duration
-            self.histories[key] = []
-        return self.durations[key]
-
-
-    def describe(self):
-        print("Adaptive Controller Status")
-        for key, history in self.histories.items():
-            label = f"[{key}]" if key else "[All]"
-            acc = sum(history) / len(history)
-            print(f"{label} — Accuracy: {acc:.2%} ({len(history)} trials), Duration: {self.durations[key]:.3f}")
+    return {
+        'condition': condition,
+        'left_stim': left_stim,
+        'right_stim': right_stim,
+        'target_position': 'left' if target == 'L' else 'right'
+    }

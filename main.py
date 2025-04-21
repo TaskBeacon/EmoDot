@@ -5,7 +5,7 @@ from psyflow import BlockUnit
 from psyflow import TrialUnit
 from psyflow import TriggerSender
 from psyflow import TriggerBank
-from psyflow import generate_balanced_conditions, assign_stimuli
+from psyflow import generate_balanced_conditions
 
 from psychopy.visual import Window
 from psychopy.hardware import keyboard
@@ -15,8 +15,9 @@ from functools import partial
 import yaml
 import sys
 import serial
+import glob
 
-from src import run_trial,Controller
+from src import run_trial, get_stim_list_from_assets, AssetPool
 
 
 
@@ -49,7 +50,6 @@ settings = TaskSettings.from_dict(task_config)
 settings.add_subinfo(subject_data)
 
 
-
 # 4. Set up window & input
 win = Window(size=settings.size, fullscr=settings.fullscreen, screen=1,
              monitor=settings.monitor, units=settings.units, color=settings.bg_color,
@@ -61,22 +61,6 @@ logging.console.setLevel(logging.INFO)
 settings.frame_time_seconds =win.monitorFramePeriod
 settings.win_fps = win.getActualFrameRate()
 settings.save_path = './data'
-
-# 5. Setup stimulus bank
-stim_bank = StimBank(win)
-# Preload all for safety
-
-stim_config={
-    **config.get('stimuli', {})
-}
-stim_bank.add_from_dict(stim_config)
-stim_bank.preload_all()
-stim_bank.preview_selected(['instruction_image2'])
-
-stim_map = stim_bank.get_selected([
-    "cue_win", "cue_lose", "cue_neut",
-    "target_win", "target_lose", "target_neut"
-])
 
 
 # 6. Setup trigger
@@ -92,31 +76,28 @@ triggersender = TriggerSender(
     on_trigger_end=lambda: ser.close()
 )
 
-# 7. setup controller
-controller_config = {
-    **config.get('controller', {})
-    }
-controller = Controller.from_dict(controller_config)
 
+stim_bank=StimBank(win)
+stim_config={
+    **config.get('stimuli', {})
+}
+stim_bank.add_from_dict(stim_config)
 
-
+png_list=get_stim_list_from_assets()
+asset_pool=AssetPool(png_list)
 all_data = []
 for block_i in range(settings.total_blocks):
+    
     # 8. setup block
     block = BlockUnit(
         block_id=f"block_{block_i}",
         block_idx=block_i,
         settings=settings,
-        stim_map=stim_map,  # assumes keys like 'cue_win', etc.
         window=win,
         keyboard=keyboard
     )
 
-    assign_cue_target = partial(assign_stimuli, components=["cue", "target"])
-    block.generate_stim_sequence(
-        generate_func=generate_balanced_conditions,
-        assign_func=assign_cue_target
-    )
+    block.generate_conditions(func=generate_balanced_conditions)
 
     @block.on_start
     def _block_start(b):
@@ -132,7 +113,7 @@ for block_i in range(settings.total_blocks):
     
     # 9. run block
     block.run_trial(
-        partial(run_trial, stim_bank=stim_bank, controller=controller, triggersender=triggersender, triggerbank=triggerbank)
+        partial(run_trial, stim_bank=stim_bank, asset_pool=asset_pool, trigger_sender=triggersender, trigger_bank=triggerbank)
     )
     
     block.to_dict(all_data)
