@@ -96,7 +96,7 @@ stimuli:
   
   right_target:
     type: circle
-    radius: 3
+    radius: 2.2
     pos: [4.5, 0]
     color: white
 
@@ -137,7 +137,7 @@ stimuli:
 # === Timing & Adaptivity ===
 timing:
   fixation_duration: [0.8, 1.0]
-  cue_duration: 0.5
+  cue_duration: 0.8
   target_duration: 0.5
 
  
