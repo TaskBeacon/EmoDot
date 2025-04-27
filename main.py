@@ -5,7 +5,7 @@ from psyflow import BlockUnit
 from psyflow import StimUnit
 from psyflow import TriggerSender
 from psyflow import TriggerBank
-from psyflow import generate_balanced_conditions
+from psyflow import generate_balanced_conditions, count_down
 
 from psychopy.visual import Window
 from psychopy.hardware import keyboard
@@ -15,7 +15,7 @@ from functools import partial
 import yaml
 import sys
 import serial
-import glob
+
 
 from src import run_trial, get_stim_list_from_assets, AssetPool
 
@@ -83,8 +83,11 @@ stim_config={
 }
 stim_bank.add_from_dict(stim_config)
 
+
 png_list=get_stim_list_from_assets()
 asset_pool=AssetPool(png_list)
+StimUnit(win, 'instruction_text').add_stim(stim_bank.get('instruction_text')).wait_and_continue()
+count_down(win, 3, color='white')
 all_data = []
 for block_i in range(settings.total_blocks):
     
@@ -116,11 +119,14 @@ for block_i in range(settings.total_blocks):
     
     block.to_dict(all_data)
     tmp = block.to_dict()
-    hit_rate =sum(trial.get('target_unit_hit', False) for trial in tmp) / len(tmp)
+    hit_rate =sum(trial.get('target_hit', False) for trial in tmp) / len(tmp)
+    win.flip()
     StimUnit(win, 'block').add_stim(stim_bank.get_and_format('block_break', 
                                                                 block_num=block_i+1, 
                                                                 total_blocks=settings.total_blocks,
                                                                 accuracy=hit_rate)).wait_and_continue()
+    if block_i+1 < settings.total_blocks:
+        count_down(win, 3, color='white')
     if block_i+1 == settings.total_blocks:
         StimUnit(win, 'block').add_stim(stim_bank.get('good_bye')).wait_and_continue(terminate=True)
     
