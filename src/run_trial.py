@@ -1,4 +1,4 @@
-from psyflow import TrialUnit
+from psyflow import StimUnit
 import os
 from functools import partial
 from src import assign_stim_from_condition
@@ -9,7 +9,7 @@ def run_trial(win, kb, settings, condition, stim_bank, asset_pool, trigger_sende
     fixation → face pair → target + response
     """
     trial_data = {"condition": condition}
-    make_unit = partial(TrialUnit, win=win, triggersender=trigger_sender)
+    make_unit = partial(StimUnit, win=win, triggersender=trigger_sender)
 
     trial_info = assign_stim_from_condition(condition, asset_pool)
     left_stim = stim_bank.rebuild('left_stim', image=os.path.join('assets', trial_info['left_stim']))
