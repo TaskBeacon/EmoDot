@@ -19,13 +19,15 @@ subinfo_fields:
     choices: [Male, Female]
 
 subinfo_mapping:
-    subject_id: "Subject ID (three digits)"
-    session_name: "Session Name"
-    experimenter: "Experimenter"
-    gender: "Gender"
-    registration_failed: "Registration failed."
-    registration_successful: "Registration successful！"
-    invalid_input: "Field {field} input is invalid."
+    subject_id: "被试号"
+    session_name: "Session名称(Practice/Experiment)"
+    experimenter: "主试姓名或缩写"
+    gender: "性别"
+    Male: "男"
+    Female: "女"
+    registration_failed: "注册失败。"
+    registration_successful: "注册成功！"
+    invalid_input: "字段 {field} 输入无效。"
 
 
 # === Window settings ===
@@ -64,7 +66,6 @@ task:
     - NN_M_L
     - NN_M_R
   key_list: [left, right]
-  delta: 10 # points unit
   seed_mode: "same_across_sub"
 
 
@@ -90,57 +91,72 @@ stimuli:
   
   left_target:
     type: circle
-    radius: 3
+    radius: 2
     pos: [-4.5, 0]
     color: white
   
   right_target:
     type: circle
-    radius: 2.2
+    radius: 2
     pos: [4.5, 0]
     color: white
 
+  
   block_break:
-    type: text
+    type: textbox
     text: |
-      Take a break! 
-      When you are ready, press space to continue.
-    color: white
+      第 {block_num} / {total_blocks} 部分完成
+      击中率：{accuracy:.2f}
 
-  block_feedback:
-    type: text
-    text: |
-      Block {block_num} of {total_blocks} completed. 
-      Accuaracy: {accuracy:.2f}
-      Reward: {reward:.2f}
-      Press space to continue.
+      请在充分休息后按下空格键
+      进入下一个部分
     color: white
+    font: SimHei
+    alignment: center
+    letterHeight: 0.78
 
   instruction_text:
-    type: text
+    type: textbox
     text: |
-      In this task, you will see a series of cues and targets. 
-      Your task is to respond to the cues as quickly as possible. 
-      If you respond to a cue, you will earn 10 points. 
-      If you do not respond to a cue, you will earn 0 points. 
-      Press space to continue.
-    color: white
+      【情绪点探索任务】
 
+      在本任务中，您将首先看到一个注视点（"+"号），
+      接着会出现一对面孔图片。
+      短暂呈现后，屏幕上会出现一个小黑点。
+
+      您的任务是尽快按键，指示小黑点出现的位置：
+        - 如果小黑点在左侧，请按【左方向键】。
+        - 如果小黑点在右侧，请按【右方向键】。
+
+      请尽可能快速且准确地作出反应。
+
+      准备好后，请按【空格键】开始任务。
+    color: white
+    font: SimHei
+    alignment: center
+    letterHeight: 0.78
 
   good_bye:
-    type: text
+    type: textbox
     text: |
-      Thank you for participating!
-      Press space to exit.
+      【任务结束】
+
+      感谢您的参与！
+      请按【空格键】退出任务。
     color: white
+    font: SimHei
+    alignment: center
+    letterHeight: 0.78
+
 
 # === Timing & Adaptivity ===
 timing:
-  fixation_duration: [0.8, 1.0]
-  cue_duration: 0.8
-  target_duration: 0.5
+  fixation_duration: 0.3
+  cue_duration: 0.5
+  interval_duration: [0.4,0.6]
+  target_duration: 1
 
- 
+
 triggers:
   exp_onset: 98
   exp_end: 99

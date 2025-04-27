@@ -27,6 +27,9 @@ def run_trial(win, kb, settings, condition, stim_bank, asset_pool, trigger_sende
         .show(duration=settings.cue_duration, onset_trigger=trigger_bank.get(f"{condition}_cue_onset")) \
         .to_dict(trial_data)
 
+    # interval
+    make_unit(unit_label='itnerval').add_stim(stim_bank.get("fixation")) \
+        .show(duration=settings.interval_duration)
     # --- target + Response ---
     target_stim = stim_bank.get(f"{trial_info['target_position']}_target")
     target_unit = make_unit(unit_label="target").add_stim(target_stim)

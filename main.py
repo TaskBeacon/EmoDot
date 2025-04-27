@@ -102,14 +102,12 @@ for block_i in range(settings.total_blocks):
     @block.on_start
     def _block_start(b):
         print("Block start {}".format(b.block_idx))
-        # b.logging_block_info()
         triggersender.send(triggerbank.get("block_onset"))
     @block.on_end
     def _block_end(b):     
         print("Block end {}".format(b.block_idx))
         triggersender.send(triggerbank.get("block_end"))
-        print(b.summarize())
-        # print(b.describe())
+
     
     # 9. run block
     block.run_trial(
@@ -117,10 +115,14 @@ for block_i in range(settings.total_blocks):
     )
     
     block.to_dict(all_data)
-    if block_i < settings.total_blocks - 1:
-        StimUnit(win, 'block').add_stim(stim_bank.get('block_break')).wait_and_continue()
-    else:
-        StimUnit(win, 'block').add_stim(stim_bank.get_and_format('good_bye', reward=100)).wait_and_continue(terminate=True)
+    tmp = block.to_dict()
+    hit_rate =sum(trial.get('target_unit_hit', False) for trial in tmp) / len(tmp)
+    StimUnit(win, 'block').add_stim(stim_bank.get_and_format('block_break', 
+                                                                block_num=block_i+1, 
+                                                                total_blocks=settings.total_blocks,
+                                                                accuracy=hit_rate)).wait_and_continue()
+    if block_i+1 == settings.total_blocks:
+        StimUnit(win, 'block').add_stim(stim_bank.get('good_bye')).wait_and_continue(terminate=True)
     
 import pandas as pd
 df = pd.DataFrame(all_data)
