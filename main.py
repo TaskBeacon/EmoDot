@@ -67,9 +67,9 @@ settings.save_path = './data'
 trigger_config = {
     **config.get('triggers', {})
 }
-triggerbank = TriggerBank(trigger_config)
+trigger_bank = TriggerBank(trigger_config)
 ser = serial.serial_for_url("loop://", baudrate=115200, timeout=1)
-triggersender = TriggerSender(
+trigger_sender = TriggerSender(
     trigger_func=lambda code: ser.write([1, 225, 1, 0, (code)]),
     post_delay=0,
     on_trigger_start=lambda: ser.open() if not ser.is_open else None,
@@ -90,7 +90,7 @@ StimUnit(win, 'instruction_text').add_stim(stim_bank.get('instruction_text')).wa
 count_down(win, 3, color='white')
 all_data = []
 for block_i in range(settings.total_blocks):
-    
+    block_data = []
     # 8. setup block
     block = BlockUnit(
         block_id=f"block_{block_i}",
@@ -98,29 +98,14 @@ for block_i in range(settings.total_blocks):
         settings=settings,
         window=win,
         keyboard=keyboard
-    )
+    ).generate_conditions(func=generate_balanced_conditions)\
+    .on_start(lambda b: trigger_sender.send(trigger_bank.get("block_onset")))\
+    .on_end(lambda b: trigger_sender.send(trigger_bank.get("block_end")))\
+    .run_trial(partial(run_trial, stim_bank=stim_bank, asset_pool=asset_pool, trigger_sender=trigger_sender, trigger_bank=trigger_bank))\
+    .to_dict(all_data)\
+    .to_dict(block_data)
 
-    block.generate_conditions(func=generate_balanced_conditions)
-
-    @block.on_start
-    def _block_start(b):
-        print("Block start {}".format(b.block_idx))
-        triggersender.send(triggerbank.get("block_onset"))
-    @block.on_end
-    def _block_end(b):     
-        print("Block end {}".format(b.block_idx))
-        triggersender.send(triggerbank.get("block_end"))
-
-    
-    # 9. run block
-    block.run_trial(
-        partial(run_trial, stim_bank=stim_bank, asset_pool=asset_pool, trigger_sender=triggersender, trigger_bank=triggerbank)
-    )
-    
-    block.to_dict(all_data)
-    tmp = block.to_dict()
-    hit_rate =sum(trial.get('target_hit', False) for trial in tmp) / len(tmp)
-    win.flip()
+    hit_rate =sum(trial.get('target_hit', False) for trial in block_data) / len(block_data)
     StimUnit(win, 'block').add_stim(stim_bank.get_and_format('block_break', 
                                                                 block_num=block_i+1, 
                                                                 total_blocks=settings.total_blocks,
