@@ -112,10 +112,8 @@ for block_i in range(settings.total_blocks):
                                                                 total_blocks=settings.total_blocks,
                                                                 accuracy=hit_rate)).wait_and_continue()
 
-        
-
 StimUnit(win, 'block').add_stim(stim_bank.get('good_bye')).wait_and_continue(terminate=True)
-    
+
 import pandas as pd
 df = pd.DataFrame(all_data)
 df.to_csv(settings.res_file, index=False)
