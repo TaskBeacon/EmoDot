@@ -19,8 +19,6 @@ import serial
 
 from src import run_trial, get_stim_list_from_assets, AssetPool
 
-
-
 # 1. Load config
 with open('config/config.yaml', encoding='utf-8') as f:
     config = yaml.safe_load(f)
