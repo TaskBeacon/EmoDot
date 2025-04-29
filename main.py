@@ -87,9 +87,10 @@ stim_bank.add_from_dict(stim_config)
 png_list=get_stim_list_from_assets()
 asset_pool=AssetPool(png_list)
 StimUnit(win, 'instruction_text').add_stim(stim_bank.get('instruction_text')).wait_and_continue()
-count_down(win, 3, color='white')
+
 all_data = []
 for block_i in range(settings.total_blocks):
+    count_down(win, 3, color='white')
     block_data = []
     # 8. setup block
     block = BlockUnit(
@@ -110,10 +111,10 @@ for block_i in range(settings.total_blocks):
                                                                 block_num=block_i+1, 
                                                                 total_blocks=settings.total_blocks,
                                                                 accuracy=hit_rate)).wait_and_continue()
-    if block_i+1 < settings.total_blocks:
-        count_down(win, 3, color='white')
-    if block_i+1 == settings.total_blocks:
-        StimUnit(win, 'block').add_stim(stim_bank.get('good_bye')).wait_and_continue(terminate=True)
+
+        
+
+StimUnit(win, 'block').add_stim(stim_bank.get('good_bye')).wait_and_continue(terminate=True)
     
 import pandas as pd
 df = pd.DataFrame(all_data)
