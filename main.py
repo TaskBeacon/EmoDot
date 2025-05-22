@@ -31,7 +31,9 @@ trigger_sender = TriggerSender(
 # 5. Set up window & input
 win, kb = initialize_exp(settings)
 # 6. Setup stimulus bank
-stim_bank = StimBank(win,cfg['stim_config']).preload_all()
+stim_bank = StimBank(win,cfg['stim_config'])\
+    .convert_to_voice('instruction_text')\
+    .preload_all()
 # stim_bank.preview_all() 
 
 settings.save_to_json() # save all settings to json file
@@ -42,7 +44,10 @@ png_list=get_stim_list_from_assets()
 asset_pool=AssetPool(png_list)
 
 # 8. Run experiment
-StimUnit(win, 'instruction_text').add_stim(stim_bank.get('instruction_text')).wait_and_continue()
+StimUnit(win, 'instruction_text')\
+    .add_stim(stim_bank.get('instruction_text'))\
+    .add_stim(stim_bank.get('instruction_text_voice'))\
+    .wait_and_continue()
 
 all_data = []
 for block_i in range(settings.total_blocks):

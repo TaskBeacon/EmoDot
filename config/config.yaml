@@ -35,7 +35,7 @@ window:
   size: [1920, 1080]
   units: deg
   screen: 1
-  bg_color: gray
+  bg_color: black
   fullscreen: True
   monitor_width_cm: 33.62
   monitor_distance_cm: 57
@@ -118,17 +118,17 @@ stimuli:
   instruction_text:
     type: textbox
     text: |
-      【情绪点探索任务】
+      【情绪点探测任务说明】
 
-      在本任务中，您将首先看到一个注视点（"+"号）
-      接着会出现一对面孔图片。
-      短暂呈现后，屏幕上会出现一个点。
+      在本任务中，您将首先看到一个注视点
+      接着会出现一对面孔图片
+      短暂呈现后，屏幕上会出现一个点
 
       您的任务是尽快按键，指示点出现的位置：
-        - 如果小黑点在左侧，请按【f】。
-        - 如果小黑点在右侧，请按【j】。
+        - 如果点在左侧，请按【f】
+        - 如果点在右侧，请按【j】
 
-      请尽可能快速且准确地作出反应。
+      请尽可能快速且准确地作出反应
 
       准备好后，请按【空格键】开始任务。
     color: white
