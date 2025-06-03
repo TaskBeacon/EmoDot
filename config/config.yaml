@@ -36,13 +36,13 @@ subinfo_mapping:
 
 # === Window settings ===
 window:
-  size: [2560, 1600]
+  size: [1920, 1080]
   units: deg
   screen: 1
   bg_color: black
   fullscreen: True
-  monitor_width_cm: 34.5
-  monitor_distance_cm: 60
+  monitor_width_cm: 59.7
+  monitor_distance_cm: 72
 
 # === Task-level settings ===
 task:
