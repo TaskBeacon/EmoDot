@@ -8,11 +8,15 @@ subinfo_fields:
       max: 999
       digits: 3
 
-  - name: session_name
+
+  - name: subname    
     type: string
 
-  - name: experimenter
-    type: string
+  - name: age 
+    type: int
+    constraints:
+      min: 5
+      max: 60
 
   - name: gender
     type: choice
@@ -20,31 +24,32 @@ subinfo_fields:
 
 subinfo_mapping:
     subject_id: "被试号"
-    session_name: "Session名称(Practice/Experiment)"
-    experimenter: "主试姓名或缩写"
+    subname: "被试姓名(拼音)"
+    age: "年龄"
     gender: "性别"
     Male: "男"
     Female: "女"
     registration_failed: "注册失败。"
     registration_successful: "注册成功！"
-    invalid_input: "字段 {field} 输入无效。"
+    invalid_input: "字段 {field} 输入无效"
 
 
 # === Window settings ===
 window:
-  size: [1920, 1080]
+  size: [2560, 1600]
   units: deg
   screen: 1
   bg_color: black
   fullscreen: True
-  monitor_width_cm: 33.62
-  monitor_distance_cm: 57
+  monitor_width_cm: 34.5
+  monitor_distance_cm: 60
 
 # === Task-level settings ===
 task:
+  task_name: "eeg_emodot"
   total_blocks: 3
-  total_trials: 360
-  trial_per_block: 120
+  total_trials: 240
+  trial_per_block: 80
   conditions:   
     - PN_F_L # positive, neutral, female, left
     - PN_F_R # positive, neutral, female, right
@@ -83,21 +88,23 @@ stimuli:
     type: image
     pos: [-4.5, 0]
     size: [4.5, 5]
+    units: deg
   
   right_stim:
     type: image
     pos: [4.5, 0]
     size: [4.5, 5]
+    units: deg
   
   left_target:
     type: circle
-    radius: 1.2
+    radius: 1
     pos: [-4, 0]
     color: white
   
   right_target:
     type: circle
-    radius: 1.2
+    radius: 1
     pos: [4, 0]
     color: white
 
@@ -125,8 +132,8 @@ stimuli:
       短暂呈现后，屏幕上会出现一个点
 
       您的任务是尽快按键，指示点出现的位置：
-        - 如果点在左侧，请按【f】
-        - 如果点在右侧，请按【j】
+        - 如果点在左侧，请用左手食指按【f】
+        - 如果点在右侧，请用右手食指按【j】
 
       请尽可能快速且准确地作出反应
 
@@ -135,6 +142,8 @@ stimuli:
     font: SimHei
     alignment: center
     letterHeight: 0.78
+    units: deg
+    size: [20, 5]
 
   good_bye:
     type: textbox
@@ -142,11 +151,14 @@ stimuli:
       【任务结束】
 
       感谢您的参与！
-      请按【空格键】退出任务。
+      请按【空格键】退出任务
+
     color: white
     font: SimHei
     alignment: center
     letterHeight: 0.78
+    units: deg
+    size: [20, 5]
 
 
 # === Timing & Adaptivity ===
