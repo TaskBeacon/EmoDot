@@ -48,8 +48,8 @@ window:
 task:
   task_name: "eeg_emodot"
   total_blocks: 3
-  total_trials: 240
-  trial_per_block: 80
+  total_trials: 180
+  trial_per_block: 60
   conditions:   
     - PN_F_L # positive, neutral, female, left
     - PN_F_R # positive, neutral, female, right
@@ -107,7 +107,7 @@ stimuli:
     radius: 1
     pos: [4, 0]
     color: white
-
+  
   
   block_break:
     type: text
@@ -163,10 +163,10 @@ stimuli:
 
 # === Timing & Adaptivity ===
 timing:
-  fixation_duration: 0.3
+  fixation_duration: [0.8, 1]
   cue_duration: 0.5
   interval_duration: [0.4, 0.6]
-  target_duration: 1.2
+  target_duration: 1
 
 
 triggers:
