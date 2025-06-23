@@ -12,6 +12,11 @@
 | PsychoPy Version     | 2025.1.1                        |
 | Modality             | Behavior/EEG                      |
 
+```{note}
+The emotional expression stimulus are not publicly available due to potential copyright issues.
+```
+
+
 ## 1. Task Overview
 
 The Emotional Dot-Probe (EmoDot) task assesses attentional biases toward emotional stimuli. Participants are briefly shown a pair of face images—one emotional (positive or negative) and one neutral—followed by a target (a white circle) appearing on the left or right side. Participants must quickly respond to the target’s position by pressing a corresponding key. The emotional valence, facial gender, and target location are all experimentally manipulated. The task also incorporates trial-by-trial stimulus randomization from a categorized image pool to ensure balanced and unpredictable face pairings.
