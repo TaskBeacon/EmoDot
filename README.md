@@ -1,114 +1,139 @@
-# Emotional Dot-Probe Task – PsyFlow Version
+# Emotional Dot-Probe Task (EmoDot)
 
-This task implements an emotional dot-probe paradigm to measure attentional bias towards emotional versus neutral stimuli. Participants respond to the location of a target dot that appears after the brief presentation of two face stimuli. The task is built using the [PsyFlow](https://taskbeacon.github.io/psyflow/) framework.
+| Field                | Value                        |
+|----------------------|------------------------------|
+| Name                 | Emotional Dot-Probe Task (EmoDot) |
+| Version              | main (1.0)                          |
+| URL / Repository     | https://github.com/TaskBeacon/EmoDot   |
+| Short Description    | A task for assessing attentional bias toward emotional facial stimuli |
+| Created By           | Zhipeng Cao (zhipeng30@foxmail.com)          |
+| Date Updated         | 2025/06/22      |
+| PsyFlow Version      | 0.1.0               |
+| PsychoPy Version     | 2025.1.1                        |
+| Modality             | Behavior/EEG                      |
 
----
+## 1. Task Overview
 
-## Task Overview
+The Emotional Dot-Probe (EmoDot) task assesses attentional biases toward emotional stimuli. Participants are briefly shown a pair of face images—one emotional (positive or negative) and one neutral—followed by a target (a white circle) appearing on the left or right side. Participants must quickly respond to the target’s position by pressing a corresponding key. The emotional valence, facial gender, and target location are all experimentally manipulated. The task also incorporates trial-by-trial stimulus randomization from a categorized image pool to ensure balanced and unpredictable face pairings.
 
-Participants first view a fixation cross, followed by a brief presentation of a pair of face images (e.g., positive vs. neutral, negative vs. neutral). After a short interval, a small target dot appears on either the left or right side. Participants must quickly indicate the location of the dot by pressing the left or right arrow key.
+## 2. Task Flow
 
-This task assesses attentional biases toward emotional stimuli and is widely used in studies of anxiety, depression, and emotional regulation.
+### Block-Level Flow
 
----
+| Step                       | Description                                                                 |
+|----------------------------|-----------------------------------------------------------------------------|
+| Load Config                | Load task configuration, subject info schema, stimuli, triggers             |
+| Collect Subject Info       | Capture ID, name, age, gender                                               |
+| Setup Triggers             | Initialize trigger sender via serial port                                   |
+| Initialize Window/Input    | Set up PsychoPy window and keyboard                                         |
+| Load Stimuli               | Build static stimuli (shapes, text, etc.), preload and convert instructions |
+| Load Assets                | Retrieve image files from asset folder and organize by category             |
+| Initialize Stim Pool       | Create randomized per-category pools for sampling stimuli                  |
+| Show Instructions          | Display instruction text and synthesized voice                              |
+| Loop Over Blocks           | Run 3 blocks × 60 trials (with stimulus pairing + response logging)         |
+| Show Block Feedback        | Display summary (accuracy) after each block                                 |
+| Show Goodbye               | Display thank-you message                                                   |
+| Save Data                  | Save full trial data to CSV                                                 |
+| Close                      | Close serial connection and PsychoPy window                                 |
 
-## Task Flow
+### Trial-Level Flow
 
-| Step        | Description |
-|-|-|
-| Instruction | A textbox (`instruction_text`) presents task instructions in Chinese. Participant presses the **space bar** to start. |
-| Fixation    | A fixation cross "+" is shown at the center of the screen. |
-| Cue Pair    | A pair of face images (left and right) are displayed briefly. |
-| Interval    | A short blank screen or fixation is shown after the faces. |
-| Target      | A dot appears either on the left or right side; participant responds via arrow keys. |
-| Block Break | After each block, performance feedback is presented and participants rest. |
-| Goodbye     | A final thank-you screen ends the session.
+| Step                | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| Fixation            | Present fixation cross (0.8–1.0s) with trigger                              |
+| Cue Display         | Show pair of face images (left/right) for 0.5s with trigger                 |
+| Interval            | Brief fixation interval (0.4–0.6s)                                          |
+| Target              | Show white circle target on left or right; collect response (up to 1.0s)    |
+| Response Logging    | Record accuracy, RT, and target location                                    |
 
----
+### Other Logic
 
-## Configuration Summary
+| Component                     | Description                                                                 |
+|-------------------------------|-----------------------------------------------------------------------------|
+| `AssetPool`                   | A class that manages condition-specific stimulus pools using shuffle-on-depletion logic |
+| `get_stim_list_from_assets()` | Scans the `assets/` directory for `.bmp` images and categorizes them by prefix (e.g., HF, SAF) |
+| `assign_stim_from_condition()`| Given a trial condition string (e.g., `PN_F_L`), selects appropriate stimuli and target side |
+| Condition Encoding            | Each condition encodes emotion pairing (PN, SN, etc.), gender (M/F), and target side (L/R) |
 
-All key settings are stored in the `config/config.yaml` file.
+These logic components collectively ensure:
+- Dynamic, trial-specific face assignment per condition
+- Balanced sampling across categories
+- Prevention of stimulus repetition until category depletion
+- Flexible extensibility for new emotion/gender pairings
 
-### Subject Info (`subinfo_fields`)
-Participants are registered with:
-- **Subject ID** (3-digit number from 101–999)
-- **Session Name**
-- **Experimenter Name**
-- **Gender** (Male or Female)
+## 3. Configuration Summary
 
-Localized prompts are available via `subinfo_mapping`.
+### a. Subject Info
 
----
+| Field       | Meaning                        |
+|-------------|--------------------------------|
+| subject_id  | Participant ID (101–999)       |
+| subname     | Participant name (pinyin)      |
+| age         | Age (5–60)                     |
+| gender      | Gender (Male/Female)           |
 
-### Window Settings (`window`)
-- Resolution: `1920 × 1080`
-- Units: `deg`
-- Fullscreen: `True`
-- Monitor: `testMonitor`
-- Background color: `black`
+### b. Window Settings
 
----
+| Parameter             | Value         |
+|-----------------------|---------------|
+| size                  | [1920, 1080]  |
+| units                 | deg           |
+| screen                | 1             |
+| bg_color              | black         |
+| fullscreen            | True          |
+| monitor_width_cm      | 59.7          |
+| monitor_distance_cm   | 72            |
 
-### Stimuli (`stimuli`)
-| Stimulus Name       | Type    | Description |
-|-|-|-|
-| `fixation`          | `text`  | Central fixation cross "+" |
-| `left_stim`, `right_stim` | `image` | Face stimuli dynamically assigned per trial |
-| `left_target`, `right_target` | `circle` | Target dots shown left or right |
-| `block_break`       | `text`  | Mid-task break message |
-| `instruction_text`  | `textbox` | Task instructions in Chinese |
-| `good_bye`          | `textbox` | End-of-task thank-you screen |
+### c. Stimuli
 
-Stimulus images are dynamically assigned based on trial conditions using an `asset_pool`.
+| Name            | Type    | Description                                         |
+|------------------|---------|-----------------------------------------------------|
+| fixation         | text    | White "+" central fixation                          |
+| left_stim        | image   | Face image on the left (dynamic)                    |
+| right_stim       | image   | Face image on the right (dynamic)                   |
+| left_target      | circle  | White circle target (left side)                     |
+| right_target     | circle  | White circle target (right side)                    |
+| block_break      | text    | Summary screen with accuracy between blocks         |
+| instruction_text | textbox | Multi-line instructions on cue-target mapping       |
+| good_bye         | textbox | Final message post-task                             |
 
----
+### d. Timing
 
-### Timing (`timing`)
-| Phase                | Duration |
-|-|-|
-| Fixation             | 0.3 seconds |
-| Face Cue             | 0.5 seconds |
-| Interval             | 0.4–0.6 seconds (randomized) |
-| Target Response Time | 1.2 seconds |
+| Phase              | Duration (s)     |
+|--------------------|------------------|
+| fixation           | random 0.8–1.0   |
+| cue display        | 0.5              |
+| interval           | random 0.4–0.6   |
+| target             | 1.0              |
 
----
+### e. Triggers
 
-### Conditions (`task.conditions`)
-Each condition represents the combination of:
-- Emotion pair (Positive-Neutral, Negative-Neutral, Neutral-Neutral)
-- Gender of faces (Female, Male)
-- Target side (Left, Right)
+| Event Type             | Example Code |
+|------------------------|--------------|
+| Task Start             | 98           |
+| Task End               | 99           |
+| Block Start/End        | 198 / 199    |
+| Fixation Onset         | 11–201       |
+| Cue Onset              | 12–202       |
+| Target Onset           | 13–203       |
+| Key Press              | 68           |
+| No Response            | 69           |
 
-Example condition codes:
-- `PN_F_L` – Positive (left) / Neutral (right), Female faces, Target Left
-- `SN_M_R` – Negative (left) / Neutral (right), Male faces, Target Right
-- etc.
+*Note: Each condition (e.g., PN_F_L) has unique fixation/cue/target onset and response triggers.*
 
-There are 18 conditions in total.
+## 4. Methods (for academic publication)
 
----
+Participants performed a computerized emotional dot-probe task designed to probe attentional biases toward emotional facial expressions. Each trial began with a fixation cross (0.8–1.0 seconds), followed by a pair of face stimuli (one emotional—positive or negative—and one neutral), presented side by side for 0.5 seconds. After a brief inter-stimulus interval (0.4–0.6 seconds), a target dot appeared on either the left or right side of the screen. Participants were instructed to respond as quickly and accurately as possible by pressing the “F” key for left and “J” for right.
 
-### Triggers (`triggers`)
-Each condition has a full set of triggers:
+The experimental conditions conterbalanced the emotional content (positive, negative, or neutral), the gender of the faces (male/female), and the target location (left/right). A pool of facial images was pre-organized by emotion and gender categories and dynamically sampled to prevent stimulus repetition. Each image pair was randomly drawn per trial while satisfying the specified emotion/gender constraints.
 
-| Event         | Trigger Code Example (for `PN_F_L`) |
-|-|-|
-| Fixation Onset | 11 |
-| Cue Onset      | 12 |
-| Target Onset   | 13 |
-| Key Press      | 14 |
-| No Response    | 15 |
+The experiment consisted of **3 blocks** with **60 trials each**, totaling **180 trials**. Trial types were fully randomized using a blocked condition design. At the end of each block, participants received feedback about their hit rate (i.e., correct target detections). 
 
-General experiment and block onset/end triggers:
-- **Experiment Start**: 98
-- **Experiment End**: 99
-- **Block Start**: 198
-- **Block End**: 199
+## 5. References
+>MacLeod, C., Mathews, A., & Tata, P. (1986). Attentional bias in emotional disorders. Journal of Abnormal Psychology, 95, 15–20.
 
----
+>Van Rooijen, R., Ploeger, A., & Kret, M. E. (2017). The dot-probe task to measure emotional attention: A suitable measure in comparative studies?. Psychonomic bulletin & review, 24, 1686-1717.
 
-## Running the Task
-```python
-python main.py
-```
+A study that seems worth paying attention to
+
+>Xu, I., Passell, E., Strong, R. W., Grinspoon, E., Jung, L., Wilmer, J. B., & Germine, L. T. (2025). No evidence of reliability across 36 variations of the emotional dot-probe task in 9,600 participants. Clinical Psychological Science, 13(2), 261-277.
