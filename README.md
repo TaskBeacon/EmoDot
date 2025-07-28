@@ -11,6 +11,8 @@
 | PsyFlow Version      | 0.1.0               |
 | PsychoPy Version     | 2025.1.1                        |
 | Modality             | Behavior/EEG                      |
+| Language | Chinese |
+| Voice Name | zh-CN-YunyangNeural |
 
 ```{note}
 The emotional expression stimulus are not publicly available due to potential copyright issues.
